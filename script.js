@@ -1,75 +1,81 @@
 /* ═══════════════════════════════════════════════════
    PIXEL BOY PORTFOLIO — JavaScript
-   Interactive handheld-console navigation
+   Angelo Medina Gonzalez
 ═══════════════════════════════════════════════════ */
 
 'use strict';
 
 /* ─── Portfolio Data ────────────────────────────── */
 const PORTFOLIO = {
-    name:     'ALEX RIVERA',
+    name:     'ANGELO MEDINA',
     title:    'FULL STACK DEV',
-    location: 'NEW YORK, USA',
+    location: 'LAS PALMAS, ES',
     exp:      '5+ YEARS',
     status:   'OPEN TO WORK',
-    bio:      ['BUILDING WEB APPS &', 'DIGITAL EXPERIENCES', 'SINCE 2019.'],
+    langs:    [['ES', 'Native'], ['EN', 'Professional']],
 };
 
-const PROJECTS = [
+const EXPERIENCE = [
     {
-        id:    'neon-cart',
-        name:  'NEON CART',
-        short: 'E-COMMERCE PLATFORM',
-        desc:  ['FULL-STACK STORE', 'W/ REAL-TIME SYNC', 'AND ADMIN DASH.'],
-        tech:  'REACT · NODE · POSTGRES · STRIPE',
-        stats: ['★ 10K+ USERS', '◆ 99.9% UPTIME'],
+        company: 'SALESCALING',
+        role:    'Full Stack Dev',
+        period:  'May 2024 - Jul 2025',
+        stack:   ['TypeScript', 'React', 'NestJS', 'PostgreSQL'],
+        note:    'Web platform for sales scaling & automation.',
     },
     {
-        id:    'pixel-vault',
-        name:  'PIXEL VAULT',
-        short: 'DIGITAL ART MARKET',
-        desc:  ['MARKETPLACE FOR', 'DIGITAL ARTISTS TO', 'SELL THEIR WORK.'],
-        tech:  'VUE · PYTHON · MONGODB · AWS',
-        stats: ['★ 500+ ARTISTS', '◆ $200K+ SOLD'],
-    },
-    {
-        id:    'cloud-nine',
-        name:  'CLOUD NINE',
-        short: 'WEATHER APP',
-        desc:  ['ANIMATED WEATHER', 'APP W/ 7-DAY CAST', '& LOCATION SYNC.'],
-        tech:  'REACT NATIVE · OPENWEATHER',
-        stats: ['★ 50K DOWNLOADS', '◆ 4.8 STARS'],
-    },
-    {
-        id:    'retro-quest',
-        name:  'RETRO QUEST',
-        short: 'BROWSER RPG GAME',
-        desc:  ['PIXEL-ART RPG', 'WITH MULTIPLAYER', '& DUNGEONS.'],
-        tech:  'THREE.JS · SOCKET.IO · NODE',
-        stats: ['★ 2K PLAYERS', '◆ OPEN SOURCE'],
+        company: 'SQUAADS',
+        role:    'Full Stack Dev',
+        period:  'Aug 2020 - Mar 2024',
+        stack:   ['TypeScript', 'React', 'Node.js', 'Express.js'],
+        note:    'Digital product studio building client apps.',
     },
 ];
 
 const SKILLS = {
-    'FRONTEND': ['React', 'Vue.js', 'TypeScript', 'CSS', 'Three.js', 'Next.js'],
-    'BACKEND':  ['Node.js', 'Python', 'PostgreSQL', 'MongoDB', 'GraphQL', 'REST'],
-    'DEVOPS':   ['Docker', 'AWS', 'Git', 'CI/CD', 'Nginx', 'Linux'],
+    'FRONTEND': ['TypeScript · JS', 'React · Next.js', 'Ionic · Vue.js'],
+    'BACKEND':  ['Nest.js · Express', 'Node.js · PostgreSQL'],
+    'TOOLS':    ['Git · SCRUM', 'Docker · AWS'],
 };
 
-const CONTACT = [
-    { icon: '✉', label: 'EMAIL',     value: 'alex@pixeldev.io'  },
-    { icon: '⌥', label: 'GITHUB',    value: 'github/alexrivera' },
-    { icon: '◈', label: 'LINKEDIN',  value: '/in/alexrivera'    },
-    { icon: '◉', label: 'SITE',      value: 'alexrivera.dev'    },
+const EDUCATION = [
+    {
+        type:   'DEGREE',
+        school: 'ULPGC',
+        course: 'Computer Science',
+        years:  '2014 - 2020',
+    },
+    {
+        type:   'COURSE',
+        school: 'EOI',
+        course: 'Full-Stack Engineering',
+        years:  '2018',
+    },
+    {
+        type:   'COURSE',
+        school: 'EOI',
+        course: 'UX / UI Engineering',
+        years:  '2020',
+    },
 ];
 
-const MENU_ITEMS = ['ABOUT ME', 'PROJECTS', 'SKILLS', 'CONTACT'];
+const CONTACT = [
+    { icon: '✉', label: 'EMAIL',    value: 'angelo.dev@hotmail.com' },
+    { icon: '◈', label: 'GITHUB',   value: 'github.com/shaedmg'    },
+    { icon: '◉', label: 'LOCATION', value: 'Las Palmas, Spain'      },
+];
+
+const MENU_ITEMS = ['ABOUT ME', 'EXPERIENCE', 'SKILLS', 'EDUCATION', 'CONTACT'];
+
+/* Pages where ↑/↓ scrolls content instead of moving a cursor */
+const SCROLL_PAGES = new Set(['about', 'exp_detail', 'skills', 'education', 'contact']);
 
 /* ─── State ─────────────────────────────────────── */
 const state = {
-    page:         'boot',   // boot | menu | about | projects | project | skills | contact
+    page:         'boot',
     menuCursor:   0,
-    projCursor:   0,
+    expCursor:    0,
+    scrollOffset: 0,
     ready:        false,
 };
 
@@ -88,13 +94,68 @@ function init() {
     bootSequence();
 }
 
-/* ─── Speaker dots ───────────────────────────────── */
 function buildSpeakerGrid() {
-    for (let i = 0; i < 20; i++) {          // 5 cols × 4 rows
+    for (let i = 0; i < 20; i++) {
         const dot = document.createElement('div');
         dot.className = 'sp-dot';
         speakerGrid.appendChild(dot);
     }
+}
+
+/* ═══════════════════════════════════════════════════
+   SCROLL SYSTEM
+═══════════════════════════════════════════════════ */
+const LINE_H = 16; // pixels per scroll step (one line)
+
+function scrollPage(dir) {
+    if (dir === 0) return;
+    const inner = document.getElementById('scrollInner');
+    if (!inner) return;
+    const outer = inner.parentElement;
+    const max = Math.max(0, inner.scrollHeight - outer.clientHeight);
+    state.scrollOffset = Math.max(0, Math.min(max, state.scrollOffset + dir * LINE_H));
+    inner.style.transform = `translateY(-${state.scrollOffset}px)`;
+    updateScrollIndicators();
+}
+
+function updateScrollIndicators() {
+    const inner = document.getElementById('scrollInner');
+    const top   = document.getElementById('scrollIndTop');
+    const bot   = document.getElementById('scrollIndBot');
+    if (!inner || !top || !bot) return;
+    const outer = inner.parentElement;
+    const max = Math.max(0, inner.scrollHeight - outer.clientHeight);
+    top.style.opacity = state.scrollOffset >      1 ? '1' : '0';
+    bot.style.opacity = state.scrollOffset < max - 1 ? '1' : '0';
+}
+
+/**
+ * Wraps body HTML in the scroll container + indicators.
+ * All content pages use this so ↑/↓ can scroll them.
+ */
+function wrapScrollable(bodyHTML) {
+    return `<div class="scroll-outer">
+        <div class="scroll-inner" id="scrollInner">${bodyHTML}</div>
+        <div class="scroll-ind"     id="scrollIndTop">▲</div>
+        <div class="scroll-ind bot" id="scrollIndBot">▼</div>
+    </div>`;
+}
+
+/**
+ * Renders a standard content page (title + scrollable body + footer).
+ * Resets scroll and triggers indicator update after DOM settles.
+ */
+function renderContentPage(title, bodyHTML, footer) {
+    const hint = footer || '[↑↓] SCROLL &nbsp; [B] BACK';
+    screenContent.innerHTML = `
+    <div class="content-page">
+        <div class="page-title">${title}</div>
+        ${wrapScrollable(bodyHTML)}
+        <div class="page-footer">${hint}</div>
+    </div>`;
+    state.scrollOffset = 0;
+    // Give the browser one tick to lay out, then check overflow
+    requestAnimationFrame(updateScrollIndicators);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -103,57 +164,40 @@ function buildSpeakerGrid() {
 function bootSequence() {
     state.page  = 'boot';
     state.ready = false;
-
-    // Start with off-screen
     screenLcd.style.background = '#495B00';
     screenContent.innerHTML    = '';
 
     setTimeout(() => {
-        // Screen flickers on
         screenLcd.style.background = '';
-
-        // Phase 1 — logo appears
-        screenContent.innerHTML = renderBootPhase1();
+        screenContent.innerHTML = bootHTML(false);
 
         setTimeout(() => {
-            // Phase 2 — "PRESS START" blinks in
-            screenContent.innerHTML = renderBootPhase2();
+            screenContent.innerHTML = bootHTML(true);
             state.ready = true;
         }, 1600);
     }, 700);
 }
 
-function renderBootPhase1() {
+function bootHTML(showStart) {
     return `
     <div class="boot-screen">
         <div class="boot-art">PB</div>
         <div class="boot-title">PIXEL BOY</div>
         <div class="boot-sub">PORTFOLIO EDITION</div>
-        <div class="boot-cr">© 2026 ALEX RIVERA</div>
-    </div>`;
-}
-
-function renderBootPhase2() {
-    return `
-    <div class="boot-screen">
-        <div class="boot-art">PB</div>
-        <div class="boot-title">PIXEL BOY</div>
-        <div class="boot-sub">PORTFOLIO EDITION</div>
-        <div class="boot-cr">© 2026 ALEX RIVERA</div>
-        <div class="press-start">PRESS START</div>
+        <div class="boot-cr">© 2026 ANGELO MEDINA</div>
+        ${showStart ? '<div class="press-start">PRESS START</div>' : ''}
     </div>`;
 }
 
 /* ═══════════════════════════════════════════════════
-   RENDERERS
+   PAGE RENDERERS
 ═══════════════════════════════════════════════════ */
 
 function renderMenu() {
     const items = MENU_ITEMS.map((item, i) => {
-        const active  = i === state.menuCursor;
-        const cursor  = active ? '▶' : '&nbsp;';
+        const active = i === state.menuCursor;
         return `<div class="menu-item ${active ? 'active' : ''}">
-                    <span class="m-cursor">${cursor}</span>
+                    <span class="m-cursor">${active ? '▶' : '&nbsp;'}</span>
                     <span>${item}</span>
                 </div>`;
     }).join('');
@@ -162,109 +206,103 @@ function renderMenu() {
     <div class="menu-screen">
         <div class="menu-header">
             <span class="menu-player">${PORTFOLIO.name}</span>
-            <span class="menu-ver">${PORTFOLIO.title} &bull; V1.0</span>
+            <span class="menu-ver">${PORTFOLIO.title}</span>
         </div>
         <div class="menu-list">${items}</div>
-        <div class="menu-footer">[↑↓] MOVE &nbsp; [A/↵] SELECT</div>
+        <div class="menu-footer">[↑↓] MOVE &nbsp;&nbsp; [A] SELECT</div>
     </div>`;
 }
 
 function renderAbout() {
-    const bio = PORTFOLIO.bio.map(l => `<span class="val">${l}</span>`).join('');
-    screenContent.innerHTML = `
-    <div class="content-page">
-        <div class="page-title">ABOUT ME</div>
-        <div class="page-body">
-            <span class="lbl">NAME</span>
-            <span class="val">${PORTFOLIO.name}</span>
-            <span class="lbl">ROLE</span>
-            <span class="val">${PORTFOLIO.title}</span>
-            <span class="lbl">LOCATION</span>
-            <span class="val">${PORTFOLIO.location}</span>
-            <span class="lbl">EXPERIENCE</span>
-            <span class="val">${PORTFOLIO.exp}</span>
-            <span class="lbl">BIO</span>
-            ${bio}
-            <span class="lbl">STATUS</span>
-            <span class="status-open">★ ${PORTFOLIO.status} ★</span>
-        </div>
-        <div class="page-footer">[B] BACK &nbsp; [START] MENU</div>
-    </div>`;
+    state.page = 'about';
+    const langsHTML = PORTFOLIO.langs
+        .map(([l, lvl]) => `<span class="val">${l}: ${lvl}</span>`)
+        .join('');
+
+    renderContentPage('ABOUT ME', `
+        <span class="lbl">NAME</span>
+        <span class="val">ANGELO MEDINA</span>
+        <span class="lbl">ROLE</span>
+        <span class="val">${PORTFOLIO.title}</span>
+        <span class="lbl">LOCATION</span>
+        <span class="val">${PORTFOLIO.location}</span>
+        <span class="lbl">EXPERIENCE</span>
+        <span class="val">${PORTFOLIO.exp}</span>
+        <span class="lbl">LANGUAGES</span>
+        ${langsHTML}
+        <span class="lbl">STATUS</span>
+        <span class="status-open">★ ${PORTFOLIO.status} ★</span>
+    `);
 }
 
-function renderProjects() {
-    const items = PROJECTS.map((p, i) => {
-        const active = i === state.projCursor;
-        const cursor = active ? '▶' : '&nbsp;';
+function renderExperience() {
+    const items = EXPERIENCE.map((e, i) => {
+        const active = i === state.expCursor;
         return `<div class="proj-item ${active ? 'active' : ''}">
-                    <span class="p-cursor">${cursor}</span>
-                    <span>${p.name}</span>
+                    <span class="p-cursor">${active ? '▶' : '&nbsp;'}</span>
+                    <span>${e.company}</span>
                 </div>`;
     }).join('');
 
-    const preview = PROJECTS[state.projCursor];
-
+    const sel = EXPERIENCE[state.expCursor];
     screenContent.innerHTML = `
     <div class="content-page">
-        <div class="page-title">PROJECTS</div>
+        <div class="page-title">EXPERIENCE</div>
         <div class="page-body">
-            <div>${items}</div>
+            ${items}
             <div class="proj-preview">
-                ${preview.short}<br>${preview.stats[0]}
+                ${sel.role}<br>${sel.period}
             </div>
         </div>
         <div class="page-footer">[↑↓] MOVE &nbsp; [A] VIEW &nbsp; [B] BACK</div>
     </div>`;
 }
 
-function renderProjectDetail(proj) {
-    const desc  = proj.desc.join('<br>');
-    const stats = proj.stats.join('<br>');
-    screenContent.innerHTML = `
-    <div class="content-page">
-        <div class="page-title">${proj.name}</div>
-        <div class="page-body">
-            <span class="lbl">${proj.short}</span>
-            <span class="proj-tech">${desc}</span>
-
-            <span class="lbl">TECH STACK</span>
-            <span class="proj-tech">${proj.tech}</span>
-
-            <span class="lbl">HIGHLIGHTS</span>
-            <span class="proj-stat">${stats}</span>
-        </div>
-        <div class="page-footer">[B] BACK &nbsp; [START] MENU</div>
-    </div>`;
+function renderExperienceDetail(exp) {
+    state.page = 'exp_detail';
+    renderContentPage(exp.company, `
+        <span class="lbl">ROLE</span>
+        <span class="val">${exp.role}</span>
+        <span class="lbl">PERIOD</span>
+        <span class="val">${exp.period}</span>
+        <span class="lbl">TECH STACK</span>
+        <span class="proj-tech">${exp.stack.join(' · ')}</span>
+        <span class="lbl">INFO</span>
+        <span class="proj-tech">${exp.note}</span>
+    `);
 }
 
 function renderSkills() {
-    const cats = Object.entries(SKILLS).map(([cat, tags]) => {
-        const tagHTML = tags.map(t => `<span class="skill-tag">${t}</span>`).join('');
-        return `<span class="skills-cat">${cat}</span>
-                <div class="skill-wrap">${tagHTML}</div>`;
+    state.page = 'skills';
+    const cats = Object.entries(SKILLS).map(([cat, lines]) => {
+        const linesHTML = lines.map(l => `<span class="skill-line">${l}</span>`).join('');
+        return `<span class="skills-cat">${cat}</span>${linesHTML}`;
     }).join('');
+    renderContentPage('SKILLS', cats);
+}
 
-    screenContent.innerHTML = `
-    <div class="content-page">
-        <div class="page-title">SKILLS</div>
-        <div class="page-body">${cats}</div>
-        <div class="page-footer">[B] BACK &nbsp; [START] MENU</div>
-    </div>`;
+function renderEducation() {
+    state.page = 'education';
+    const items = EDUCATION.map(e => {
+        const badgeClass = e.type === 'DEGREE' ? 'type-degree' : 'type-course';
+        return `<div class="edu-item">
+            <span class="edu-type ${badgeClass}">${e.type}</span>
+            <span class="edu-school">${e.school}</span>
+            <span class="edu-course">${e.course}</span>
+            <span class="edu-years">${e.years}</span>
+        </div>`;
+    }).join('');
+    renderContentPage('EDUCATION', items);
 }
 
 function renderContact() {
+    state.page = 'contact';
     const items = CONTACT.map(c => `
         <div class="citem">
             <span class="clabel">${c.icon} ${c.label}</span>
             <span class="cval">${c.value}</span>
         </div>`).join('');
-
-    screenContent.innerHTML = `
-    <div class="content-page">
-        <div class="page-title">CONTACT</div>
-        <div class="page-body">${items}</div>
-        <div class="page-footer">[B] BACK &nbsp; [START] MENU</div>
-    </div>`;
+    renderContentPage('CONTACT', items);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -277,62 +315,60 @@ function pressA() {
         goToMenu();
     } else if (state.page === 'menu') {
         selectMenu();
-    } else if (state.page === 'projects') {
-        openProjectDetail();
+    } else if (state.page === 'experience') {
+        openExpDetail();
     }
 }
 
 function pressB() {
     if (!state.ready) return;
-    if (state.page === 'project') {
-        transition(() => { state.page = 'projects'; renderProjects(); });
-    } else if (['about', 'skills', 'contact', 'projects'].includes(state.page)) {
+    if (state.page === 'exp_detail') {
+        transition(() => { state.page = 'experience'; renderExperience(); });
+    } else if (['about', 'skills', 'education', 'contact', 'experience'].includes(state.page)) {
         goToMenu();
     }
 }
 
 function pressStart() {
     if (!state.ready) return;
-    if (state.page === 'boot') {
-        goToMenu();
-    } else {
-        goToMenu();
-    }
+    goToMenu();
 }
 
-function pressSelect() {
-    // intentionally no action — reserved
-}
+function pressSelect() { /* reserved */ }
 
 function navigate(dir) {
     if (!state.ready) return;
 
-    if (state.page === 'menu') {
+    if (SCROLL_PAGES.has(state.page)) {
+        /* On content pages: ↑/↓ scrolls the text */
+        if (dir === 'up')   scrollPage(-1);
+        if (dir === 'down') scrollPage(+1);
+
+    } else if (state.page === 'menu') {
         if (dir === 'up')   state.menuCursor = Math.max(0, state.menuCursor - 1);
         if (dir === 'down') state.menuCursor = Math.min(MENU_ITEMS.length - 1, state.menuCursor + 1);
         renderMenu();
-    } else if (state.page === 'projects') {
-        if (dir === 'up')   state.projCursor = Math.max(0, state.projCursor - 1);
-        if (dir === 'down') state.projCursor = Math.min(PROJECTS.length - 1, state.projCursor + 1);
-        renderProjects();
+
+    } else if (state.page === 'experience') {
+        if (dir === 'up')   state.expCursor = Math.max(0, state.expCursor - 1);
+        if (dir === 'down') state.expCursor = Math.min(EXPERIENCE.length - 1, state.expCursor + 1);
+        renderExperience();
     }
 }
 
 function selectMenu() {
-    const selected = MENU_ITEMS[state.menuCursor];
+    const sel = MENU_ITEMS[state.menuCursor];
     transition(() => {
-        if (selected === 'ABOUT ME')  { state.page = 'about';    renderAbout();    }
-        if (selected === 'PROJECTS')  { state.page = 'projects'; renderProjects(); }
-        if (selected === 'SKILLS')    { state.page = 'skills';   renderSkills();   }
-        if (selected === 'CONTACT')   { state.page = 'contact';  renderContact();  }
+        if (sel === 'ABOUT ME')   { state.page = 'about';      renderAbout();      }
+        if (sel === 'EXPERIENCE') { state.page = 'experience';  renderExperience(); }
+        if (sel === 'SKILLS')     { state.page = 'skills';      renderSkills();     }
+        if (sel === 'EDUCATION')  { state.page = 'education';   renderEducation();  }
+        if (sel === 'CONTACT')    { state.page = 'contact';     renderContact();    }
     });
 }
 
-function openProjectDetail() {
-    transition(() => {
-        state.page = 'project';
-        renderProjectDetail(PROJECTS[state.projCursor]);
-    });
+function openExpDetail() {
+    transition(() => renderExperienceDetail(EXPERIENCE[state.expCursor]));
 }
 
 function goToMenu() {
@@ -342,8 +378,9 @@ function goToMenu() {
     });
 }
 
-/* ─── Screen flash transition ────────────────────── */
+/* ─── Screen flash transition ───────────────────── */
 function transition(callback) {
+    state.scrollOffset = 0; // always reset scroll for new page
     screenLcd.classList.add('flash');
     screenLcd.addEventListener('animationend', () => {
         screenLcd.classList.remove('flash');
@@ -369,30 +406,12 @@ function bindButtons() {
 function bindKeyboard() {
     document.addEventListener('keydown', (e) => {
         switch (e.key) {
-            case 'ArrowUp':
-            case 'w':
-            case 'W':
-                e.preventDefault(); navigate('up');   break;
-            case 'ArrowDown':
-            case 's':
-            case 'S':
-                e.preventDefault(); navigate('down'); break;
-            case 'ArrowLeft':
-            case 'a':
-            case 'A':
-                e.preventDefault(); navigate('left'); break;
-            case 'ArrowRight':
-            case 'd':
-            case 'D':
-                e.preventDefault(); navigate('right'); break;
-            case 'z':
-            case 'Z':
-            case 'Enter':
-                pressA(); break;
-            case 'x':
-            case 'X':
-            case 'Escape':
-            case 'Backspace':
+            case 'ArrowUp':    case 'w': case 'W': e.preventDefault(); navigate('up');    break;
+            case 'ArrowDown':  case 's': case 'S': e.preventDefault(); navigate('down');  break;
+            case 'ArrowLeft':  case 'a': case 'A': e.preventDefault(); navigate('left');  break;
+            case 'ArrowRight': case 'd': case 'D': e.preventDefault(); navigate('right'); break;
+            case 'z': case 'Z': case 'Enter':                          pressA();          break;
+            case 'x': case 'X': case 'Escape': case 'Backspace':
                 e.preventDefault(); pressB(); break;
             case ' ':
                 e.preventDefault(); pressStart(); break;

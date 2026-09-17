@@ -85,6 +85,11 @@ body::before {
 .device-wrapper {
     position: relative;
     z-index: 10;
+    /* 10px padding on each side provides room for the side details
+       so they are inside the filter region and receive the drop-shadow */
+    padding: 0 10px;
+    display: flex;
+    justify-content: center;
     filter:
         drop-shadow(0 8px  20px rgba(0,0,0,0.6))
         drop-shadow(0 24px 60px rgba(0,0,0,0.7))
@@ -125,10 +130,14 @@ body::before {
 }
 
 /* ── Side details (volume + power) ─────────────── */
+/* These are siblings of .device inside .device-wrapper.
+   Absolute position is relative to .device-wrapper (position:relative).
+   left:0 / right:0 puts them flush with the 10px padding edges,
+   so they appear as visible side panels of the console. */
 .vol-detail {
     position: absolute;
-    left: -4px;
-    top: 68px;
+    left: 0;
+    top: 74px;
     width: 10px;
     background: var(--body-shadow);
     border-radius: 5px 0 0 5px;
@@ -162,13 +171,16 @@ body::before {
 
 .pwr-detail {
     position: absolute;
-    right: -2px;
-    top: 50px;
+    right: 0;
+    top: 52px;
     width: 10px;
+    background: var(--body-shadow);
+    border-radius: 0 5px 5px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 3px;
+    padding: 4px 2px;
     z-index: 5;
 }
 
@@ -394,11 +406,6 @@ body::before {
     overflow: hidden;
     font-family: var(--font-pixel);
     color: var(--gb-black);
-
-    /* Pixel-crisp text rendering */
-    image-rendering: pixelated;
-    -webkit-font-smoothing: none;
-    font-smooth: never;
 }
 
 /* ── UNDER-SCREEN LABEL ─────────────────────────── */
@@ -448,7 +455,7 @@ body::before {
 .bottom-section {
     display: flex;
     align-items: center;
-    padding: 8px 14px 12px;
+    padding: 8px 20px 12px 14px;  /* right=20px keeps A button away from edge */
     gap: 8px;
     min-height: 200px;
 }
@@ -651,8 +658,8 @@ body::before {
     height: 82px;
 }
 
-.btn-b { position: absolute; bottom: 2px; left: 4px; }
-.btn-a { position: absolute; top: 2px;   right: 4px; }
+.btn-b { position: absolute; bottom: 2px; left:  4px; }
+.btn-a { position: absolute; top:  2px;  right: 10px; }  /* extra offset from edge */
 
 .ab {
     width: 46px;
@@ -768,19 +775,19 @@ body::before {
 }
 
 .boot-sub {
-    font-size: 6px;
+    font-size: 8px;
     color: var(--gb-dark);
     letter-spacing: 1px;
 }
 
 .boot-cr {
-    font-size: 5px;
-    color: var(--gb-mid);
+    font-size: 7px;
+    color: var(--gb-dark);
     margin-top: 8px;
 }
 
 .press-start {
-    font-size: 7px;
+    font-size: 8px;
     color: var(--gb-black);
     margin-top: 18px;
     animation: blink 0.9s step-end infinite;
@@ -816,7 +823,7 @@ body::before {
 }
 
 .menu-ver {
-    font-size: 5px;
+    font-size: 7px;
     color: var(--gb-dark);
     letter-spacing: 0.5px;
 }
@@ -851,9 +858,9 @@ body::before {
 }
 
 .menu-footer {
-    font-size: 5px;
-    color: var(--gb-mid);
-    border-top: 1px solid var(--gb-mid);
+    font-size: 7px;
+    color: var(--gb-dark);
+    border-top: 1px solid var(--gb-dark);
     padding-top: 5px;
     text-align: center;
 }
@@ -881,45 +888,45 @@ body::before {
 .page-body {
     flex: 1;
     overflow: hidden;
-    font-size: 7px;
+    font-size: 8px;
     color: var(--gb-black);
-    line-height: 15px;
+    line-height: 16px;
 }
 
 .lbl {
-    font-size: 6px;
+    font-size: 8px;
     color: var(--gb-dark);
     display: block;
     margin-bottom: 1px;
-    margin-top: 5px;
+    margin-top: 6px;
 }
 
 .lbl:first-child { margin-top: 0; }
 
 .val {
-    font-size: 7px;
+    font-size: 8px;
     color: var(--gb-black);
     display: block;
 }
 
 .highlight {
     color: var(--gb-dark);
-    font-size: 6.5px;
+    font-size: 8px;
 }
 
 .status-open {
     color: var(--gb-black);
-    font-size: 7px;
+    font-size: 8px;
     animation: blink 1.2s step-end infinite;
 }
 
-/* Projects */
+/* Experience / Projects */
 .proj-item {
     display: flex;
     align-items: center;
     gap: 7px;
-    padding: 4px 2px;
-    font-size: 7.5px;
+    padding: 5px 2px;
+    font-size: 8px;
     color: var(--gb-dark);
     line-height: 1;
 }
@@ -935,81 +942,169 @@ body::before {
 }
 
 .proj-preview {
-    font-size: 6px;
+    font-size: 8px;
     color: var(--gb-dark);
-    margin-top: 4px;
-    padding-top: 4px;
+    margin-top: 6px;
+    padding-top: 5px;
     border-top: 1px solid var(--gb-mid);
-    line-height: 12px;
+    line-height: 14px;
 }
 
-/* Project detail */
+/* Detail page */
 .proj-tech {
-    font-size: 6px;
+    font-size: 8px;
     color: var(--gb-dark);
-    line-height: 12px;
+    line-height: 14px;
 }
 
 .proj-stat {
-    font-size: 6px;
+    font-size: 8px;
     color: var(--gb-dark);
+    line-height: 14px;
 }
 
-/* Skills */
+/* Skills — plain list, easy to read at 8px */
 .skills-cat {
-    font-size: 6.5px;
+    font-size: 8px;
     color: var(--gb-black);
     display: block;
-    margin-top: 6px;
+    margin-top: 8px;
     margin-bottom: 3px;
 }
 
 .skills-cat:first-child { margin-top: 0; }
 
-.skill-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-    margin-bottom: 2px;
-}
-
-.skill-tag {
-    font-size: 5.5px;
+.skill-line {
+    font-size: 8px;
     color: var(--gb-dark);
-    border: 1px solid var(--gb-dark);
-    padding: 1px 4px;
-    border-radius: 1px;
-    line-height: 1.4;
+    display: block;
+    line-height: 14px;
 }
 
 /* Contact */
 .citem {
-    margin-bottom: 7px;
+    margin-bottom: 8px;
 }
 
 .citem:last-child { margin-bottom: 0; }
 
 .clabel {
-    font-size: 6px;
+    font-size: 8px;
     color: var(--gb-black);
     display: block;
     margin-bottom: 2px;
 }
 
 .cval {
-    font-size: 6px;
+    font-size: 8px;
     color: var(--gb-dark);
     display: block;
 }
 
 /* Footer hint */
 .page-footer {
-    font-size: 5px;
-    color: var(--gb-mid);
-    border-top: 1px solid var(--gb-mid);
-    padding-top: 4px;
+    font-size: 7px;
+    color: var(--gb-dark);
+    border-top: 1px solid var(--gb-dark);
+    padding-top: 5px;
     text-align: center;
-    margin-top: auto;
+    flex-shrink: 0;
+}
+
+/* ── Scrollable content area ──────────────────────── */
+/* Replaces the old .page-body for all content pages */
+.scroll-outer {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;     /* required for flex children to shrink */
+}
+
+.scroll-inner {
+    padding-bottom: 4px;
+    /* smooth scroll via JS transform */
+    transition: transform 0.1s ease-out;
+    /* font defaults for all content inside */
+    font-size: 8px;
+    color: var(--gb-black);
+    line-height: 16px;
+}
+
+/* Scroll indicators — ▲ / ▼ shown when more content exists */
+.scroll-ind {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    /* Dark pill on light screen — clearly visible */
+    color: var(--gb-light);
+    background: var(--gb-black);
+    padding: 0 8px;
+    line-height: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s;
+    z-index: 20;
+    border-radius: 2px;
+}
+
+.scroll-ind:not(.bot) { top: 0; }
+.scroll-ind.bot       { bottom: 0; }
+
+/* ── Education ───────────────────────────────────── */
+.edu-item {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gb-dark);
+}
+
+.edu-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Type badge: filled = DEGREE, outlined = COURSE */
+.edu-type {
+    font-size: 7px;
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 1px;
+    margin-bottom: 3px;
+    letter-spacing: 1px;
+    line-height: 12px;
+}
+
+.type-degree {
+    background: var(--gb-black);
+    color: var(--gb-light);
+}
+
+.type-course {
+    border: 1px solid var(--gb-dark);
+    color: var(--gb-dark);
+}
+
+.edu-school {
+    font-size: 8px;
+    color: var(--gb-black);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.edu-course {
+    font-size: 8px;
+    color: var(--gb-dark);
+    display: block;
+    margin-bottom: 2px;
+    line-height: 14px;
+}
+
+.edu-years {
+    font-size: 8px;
+    color: var(--gb-dark);
+    display: block;
 }
 
 /* Screen transition flash */

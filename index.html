@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Rivera — Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="device-wrapper">
+        <div class="device" id="device">
+
+            <!-- Volume slider (left side detail) -->
+            <div class="vol-detail">
+                <div class="vol-track">
+                    <div class="vol-knob"></div>
+                </div>
+            </div>
+
+            <!-- Power switch (right side detail) -->
+            <div class="pwr-detail">
+                <div class="pwr-label top">OFF</div>
+                <div class="pwr-slot">
+                    <div class="pwr-nub"></div>
+                </div>
+                <div class="pwr-label bot">ON</div>
+            </div>
+
+            <!-- ════════════════ TOP SECTION ════════════════ -->
+            <div class="top-section">
+
+                <!-- Brand row -->
+                <div class="brand-row">
+                    <span class="brand-reg">®</span>
+                    <span class="brand-name">PIXEL BOY</span>
+                    <span class="brand-sub">COLOR</span>
+                </div>
+
+                <!-- LED + Screen bezel -->
+                <div class="screen-area">
+
+                    <div class="led-row">
+                        <div class="power-led" id="powerLed"></div>
+                        <span class="led-text">POWER</span>
+                    </div>
+
+                    <div class="screen-bezel">
+                        <div class="bezel-inner">
+                            <div class="screen-lcd" id="screenLcd">
+                                <!-- Visual overlays -->
+                                <div class="ov scanlines"></div>
+                                <div class="ov pixelgrid"></div>
+                                <div class="ov vignette"></div>
+                                <div class="ov glare"></div>
+                                <!-- Portfolio content rendered here -->
+                                <div class="screen-content" id="screenContent"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="under-screen">
+                        <div class="us-dot"></div>
+                        <span class="us-text">✦ PORTFOLIO ADVANCE ✦</span>
+                        <div class="us-dot"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ════════════════ SEPARATOR ════════════════ -->
+            <div class="separator">
+                <div class="sep-groove"></div>
+            </div>
+
+            <!-- ════════════════ BOTTOM SECTION ════════════════ -->
+            <div class="bottom-section">
+
+                <!-- D-PAD -->
+                <div class="zone-left">
+                    <div class="dpad">
+                        <div class="dp-row">
+                            <div class="dp-void"></div>
+                            <button class="dp dp-up"   id="dpUp"   aria-label="Up"></button>
+                            <div class="dp-void"></div>
+                        </div>
+                        <div class="dp-row">
+                            <button class="dp dp-left"  id="dpLeft"  aria-label="Left"></button>
+                            <div class="dp-hub"></div>
+                            <button class="dp dp-right" id="dpRight" aria-label="Right"></button>
+                        </div>
+                        <div class="dp-row">
+                            <div class="dp-void"></div>
+                            <button class="dp dp-down"  id="dpDown"  aria-label="Down"></button>
+                            <div class="dp-void"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CENTER: SELECT/START + SPEAKER -->
+                <div class="zone-center">
+                    <div class="sys-row">
+                        <div class="sys-group">
+                            <button class="sys-btn" id="btnSelect"></button>
+                            <span class="sys-label">SELECT</span>
+                        </div>
+                        <div class="sys-group">
+                            <button class="sys-btn" id="btnStart"></button>
+                            <span class="sys-label">START</span>
+                        </div>
+                    </div>
+                    <div class="speaker-grid" id="speakerGrid"></div>
+                </div>
+
+                <!-- A/B BUTTONS -->
+                <div class="zone-right">
+                    <div class="ab-cluster">
+                        <button class="ab btn-b" id="btnB">B</button>
+                        <button class="ab btn-a" id="btnA">A</button>
+                    </div>
+                    <div class="ab-labels">
+                        <span>B</span>
+                        <span>A</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CARTRIDGE SLOT (bottom accent) -->
+            <div class="cart-slot">
+                <div class="cart-slot-inner"></div>
+                <div class="cart-slot-text">GAME PAK</div>
+            </div>
+
+        </div>
+        <!-- /.device -->
+    </div>
+
+    <p class="controls-hint">ARROW KEYS / Z = A / X = B / SPACE = START</p>
+
+    <script src="script.js"></script>
+</body>
+</html>

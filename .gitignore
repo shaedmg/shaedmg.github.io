@@ -1,0 +1,9 @@
+# Personal documents — never commit to public repos
+cv.pdf
+*.pdf
+
+# OS / editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

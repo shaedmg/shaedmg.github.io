@@ -62,24 +62,245 @@ html, body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #0E0E1A;
+    background: #0B0B14;
     font-family: var(--font-pixel);
     overflow-x: hidden;
-    padding: 20px 0 40px;
+    padding: 24px 0 48px;
 }
 
-/* Atmospheric background */
+/* Edge vignette — darkens corners, draws eye to center */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background:
-        radial-gradient(ellipse at 25% 15%, rgba(80, 30, 120, 0.25) 0%, transparent 55%),
-        radial-gradient(ellipse at 75% 85%, rgba(20, 60, 100, 0.25) 0%, transparent 55%),
-        radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 40%, rgba(0,0,0,0.6) 100%);
+    background: radial-gradient(
+        ellipse at 50% 50%,
+        transparent         35%,
+        rgba(0, 0, 0, 0.55) 100%
+    );
     pointer-events: none;
-    z-index: 0;
+    z-index: 6;
 }
+
+/* Page-wide CRT scanlines — very faint retro texture */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        180deg,
+        transparent       0px,
+        transparent       5px,
+        rgba(0,0,0,0.022) 5px,
+        rgba(0,0,0,0.022) 6px
+    );
+    pointer-events: none;
+    z-index: 7;
+}
+
+/* ════════════════════════════════════════════════
+   BG LAYER 1 — ANIMATED AURORA BLOBS
+   Four large radial-gradient orbs drift slowly,
+   creating an aurora borealis colour field.
+════════════════════════════════════════════════ */
+.bg-aurora {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.a-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    will-change: transform;
+}
+
+/* Violet-purple — top-left */
+.a1 {
+    width: 70vmin; height: 70vmin;
+    top: -18%; left: -12%;
+    background: radial-gradient(ellipse,
+        rgba(120, 40, 240, 0.46) 0%,
+        rgba(90,  20, 180, 0.20) 50%,
+        transparent              70%);
+    animation: blobDrift1 24s ease-in-out infinite;
+}
+
+/* Teal-cyan — bottom-right */
+.a2 {
+    width: 60vmin; height: 60vmin;
+    bottom: -12%; right: -8%;
+    background: radial-gradient(ellipse,
+        rgba(15, 165, 190, 0.40) 0%,
+        rgba(10, 120, 150, 0.18) 50%,
+        transparent               70%);
+    animation: blobDrift2 19s ease-in-out infinite;
+}
+
+/* Royal-blue — top-right */
+.a3 {
+    width: 50vmin; height: 50vmin;
+    top: 2%; right: -4%;
+    background: radial-gradient(ellipse,
+        rgba(45, 75, 220, 0.32) 0%,
+        rgba(30, 50, 160, 0.14) 50%,
+        transparent              70%);
+    animation: blobDrift3 28s ease-in-out infinite;
+}
+
+/* Warm magenta — bottom-left */
+.a4 {
+    width: 44vmin; height: 44vmin;
+    bottom: 2%; left: -6%;
+    background: radial-gradient(ellipse,
+        rgba(190, 30, 110, 0.24) 0%,
+        rgba(140, 20,  80, 0.10) 50%,
+        transparent               70%);
+    animation: blobDrift4 21s ease-in-out infinite;
+}
+
+@keyframes blobDrift1 {
+    0%,100% { transform: translate(  0px,   0px) scale(1.00); }
+    25%     { transform: translate( 45px, -35px) scale(1.06); }
+    50%     { transform: translate(-25px,  20px) scale(0.94); }
+    75%     { transform: translate( 20px,  40px) scale(1.03); }
+}
+@keyframes blobDrift2 {
+    0%,100% { transform: translate(  0px,   0px) scale(1.00); }
+    33%     { transform: translate(-40px,  30px) scale(1.07); }
+    66%     { transform: translate( 30px, -22px) scale(0.93); }
+}
+@keyframes blobDrift3 {
+    0%,100% { transform: translate(  0px,  0px) scale(1.00); }
+    40%     { transform: translate(-35px,-28px) scale(1.05); }
+    70%     { transform: translate( 22px, 18px) scale(0.96); }
+}
+@keyframes blobDrift4 {
+    0%,100% { transform: translate( 0px,   0px) scale(1.00); }
+    30%     { transform: translate(35px, -25px) scale(1.06); }
+    65%     { transform: translate(-28px, 32px) scale(0.95); }
+}
+
+/* ════════════════════════════════════════════════
+   BG LAYER 2 — DOT-MATRIX GRID
+   Fine 1px dots every 28px echo the GameBoy's
+   pixel structure and add geometric depth.
+════════════════════════════════════════════════ */
+.bg-grid {
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(
+        circle,
+        rgba(255,255,255,0.09) 0%,
+        rgba(255,255,255,0.09) 1px,
+        transparent             1px
+    );
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* ════════════════════════════════════════════════
+   BG LAYER 3 — FILM GRAIN
+   SVG fractalNoise creates organic tactile texture
+   that makes dark backgrounds feel premium.
+════════════════════════════════════════════════ */
+.bg-grain {
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 320px 320px;
+    background-repeat: repeat;
+    opacity: 0.038;
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* ════════════════════════════════════════════════
+   BG LAYER 4A — STUDIO SPOTLIGHT
+   Cone of soft white light from above simulates
+   a professional product-photography setup.
+════════════════════════════════════════════════ */
+.bg-spot {
+    position: fixed;
+    top: -140px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 720px;
+    height: 950px;
+    background: radial-gradient(ellipse at 50% 0%,
+        rgba(255,255,255,0.055)  0%,
+        rgba(255,255,255,0.015) 38%,
+        transparent              62%);
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* ════════════════════════════════════════════════
+   BG LAYER 4B — LCD SURFACE GLOW
+   The GameBoy's green screen casts a subtle glow
+   onto the surface below — grounding the device.
+════════════════════════════════════════════════ */
+.bg-glow {
+    position: fixed;
+    bottom: 9%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 520px;
+    height: 110px;
+    background: radial-gradient(ellipse at 50% 50%,
+        rgba(155,188, 15, 0.16)  0%,
+        rgba(100,140,  8, 0.06) 50%,
+        transparent              75%);
+    filter: blur(32px);
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* ════════════════════════════════════════════════
+   HUD CORNER BRACKETS
+   Fine L-shaped brackets at each viewport corner
+   give the page a cinematic heads-up-display feel.
+════════════════════════════════════════════════ */
+.corner {
+    position: fixed;
+    width: 48px;
+    height: 48px;
+    pointer-events: none;
+    z-index: 8;
+    opacity: 0.45;
+}
+
+.corner.tl { top: 24px; left: 24px; }
+.corner.tr { top: 24px; right: 24px; }
+.corner.bl { bottom: 24px; left: 24px; }
+.corner.br { bottom: 24px; right: 24px; }
+
+.corner::before,
+.corner::after {
+    content: '';
+    position: absolute;
+    background: rgba(255,255,255,0.32);
+    border-radius: 1px;
+}
+
+/* Horizontal arm */
+.corner::before { width: 26px; height: 2px; }
+/* Vertical arm  */
+.corner::after  { width: 2px;  height: 26px; }
+
+.corner.tl::before { top: 0; left: 0; }
+.corner.tl::after  { top: 0; left: 0; }
+.corner.tr::before { top: 0; right: 0; }
+.corner.tr::after  { top: 0; right: 0; }
+.corner.bl::before { bottom: 0; left: 0; }
+.corner.bl::after  { bottom: 0; left: 0; }
+.corner.br::before { bottom: 0; right: 0; }
+.corner.br::after  { bottom: 0; right: 0; }
+
 
 /* ── Device wrapper (holds drop-shadow) ─────────── */
 .device-wrapper {

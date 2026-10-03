@@ -1350,6 +1350,55 @@ body::after {
     margin-top: 22px;
 }
 
+/* ── Social Links ───────────────────────────────── */
+.social-links {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    gap: 14px;
+    margin-top: 16px;
+    justify-content: center;
+}
+
+.social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-pixel);
+    font-size: 6px;
+    letter-spacing: 1.5px;
+    color: rgba(155, 188, 15, 0.55);
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid rgba(155, 188, 15, 0.18);
+    border-radius: 2px;
+    background: rgba(155, 188, 15, 0.04);
+    transition:
+        color          0.2s ease,
+        border-color   0.2s ease,
+        background     0.2s ease,
+        box-shadow     0.2s ease;
+}
+
+.social-btn:hover {
+    color: rgba(155, 188, 15, 0.95);
+    border-color: rgba(155, 188, 15, 0.55);
+    background: rgba(155, 188, 15, 0.08);
+    box-shadow:
+        0 0 8px  rgba(155, 188, 15, 0.18),
+        0 0 18px rgba(155, 188, 15, 0.08);
+}
+
+.social-btn:focus-visible {
+    outline: 1px solid rgba(155, 188, 15, 0.6);
+    outline-offset: 3px;
+}
+
+.social-icon {
+    font-size: 8px;
+    line-height: 1;
+}
+
 /* ── Responsive scaling ─────────────────────────── */
 @media (max-height: 720px) {
     .device-wrapper { transform: scale(0.88); transform-origin: top center; }
